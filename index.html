@@ -35,8 +35,8 @@
     </div>
 
     <div id="chatRoom" class="container row">
-      <h1>Sala de Chat de:</h1>
-      <p id="resultado"> </p>
+      <h1>Sala de Chat</h1>
+      
       <div class="col-lg-4">
         <div class="thumbnail">
           <img src="img/cara1.jpg">
@@ -47,18 +47,25 @@
           <h4 id="yourName">Usted</h4>
         </div>
       </div>
-      <div class="jumbotron col-lg-8 chatPanel">
+      <div class="jumbotron col-lg-8">
+        <button type="button" class="btn btn-default" id='bSiguiente'>Siguiente usuario</button>
         <div id="messagePanel" class="panel panel-default ">
-          <div class="panel-body">
+          <div class="panel-body" id='chatPanel'>
             
           </div>
         </div>
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Escriba su Mensaje">
-            <span class="input-group-btn">
-              <button id="enviaMensaje" class="btn btn-default" type="button">Enviar</button>
-            </span>
-        </div>
+        <form id='enviaMensaje'>
+          <div class="form-group">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Escriba su Mensaje" id="cuadroMensaje">
+                <span class="input-group-btn">
+                  <button id="enviarMensaje" class="btn btn-default" type="button submit">Enviar</button>
+                </span>
+            </div>
+          </div>
+        </form>
+          
+        
       </div>
     </div>
 
@@ -67,11 +74,23 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       $(function(){
+
+        $('#chatRoom').hide();        
+
         var socket = io.connect();
 
         var $formaID = $('#insertaNick');
 
         var $entraNick = $('#nombreUsuario');
+
+        var $chat = $('#chatPanel');
+
+        var $enviaMensaje = $('#enviaMensaje');
+
+        var $elMensaje = $('#cuadroMensaje');
+
+
+        var nickCompanero = null;
 
         $formaID.submit(function(e){
           e.preventDefault();
@@ -80,6 +99,7 @@
             if(data){
               $('#nameInput').hide();
               $('#chatRoom').show();
+              $elMensaje.disabled = true;
             }          
             else{
               $('#grupoNick').addClass("has-error");
@@ -87,14 +107,55 @@
             }
           });
         });
-      });
+        //Recibiendo mis credenciales
+        socket.on('sesion', function(data){
+          var token = data.token;
+          var IDSesion = data.sessionID;
+          //console.log('El ID de esta sesión es ' + IDSesion);
+        });
 
-      //Recibiendo mis credenciales
-      socket.on('sesion', function(data){
-        var token = data.token;
-        var IDSesion = data.sessionID;
-      });
+        //Función para buscar otro compañero
+        document.getElementById('bSiguiente').onclick = function(){          
+          socket.emit('siguiente', nickCompanero ,function(data){
+              //elMensaje.disabled = true;
+              if (data) {
+                console.log('Esperando conexión');
+                elMensaje.disabled = false;
+              }else{
+                console.log('No hay gente libre');
+              };
+          });
+        };
 
+        //Cuando me pidan suscripción
+        socket.on('suscribete', function(data){
+          //Debo guardar los datos de mi compañero          
+          nickCompanero = data;
+          //$elMensaje.disabled = false;
+          console.log('Suscrito con '+ nickCompanero);
+        });
+
+        //Cuando reciba un mensaje
+        socket.on('mensaje', function(data){
+          //Simplemente lo escribo
+          $chat.append(data.nick+ ' dice: '+ data.mensaje+"<br/>");
+        });
+
+        //Cuando envío un mensaje
+        $enviaMensaje.submit(function(e){
+          e.preventDefault();
+          $chat.append('Usted dice: '+ $elMensaje.val() +"<br/>");
+          var datos = {
+              //Le digo cual es el mensaje
+              mensaje: $elMensaje.val(),
+              //y a quién se lo quiero enviar
+              destino: nickCompanero
+            };
+          socket.emit('mensaje', datos);
+          $elMensaje.val('')
+        });
+      });
+      
     </script>
     
   </body>
