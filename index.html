@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ChaRulet</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  </head>
+  
+  <body>
+
+    <div class="page-header">
+      <h1>ChaRulet <small>Proyecto para Sistemas Distribuídos</small></h1>
+    </div>
+    <div id="nameInput" class="container">
+      <div class="row">
+        <div class="col-lg-6 col-lg-offset-3">
+          <form id='insertaNick'>
+            <div id='grupoNick' class="form-group">
+              <div class="input-group">
+                <input id='nombreUsuario' type="text" class="form-control" placeholder='Ingrese su nombre de usuario'>
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button"><span class='glyphicon glyphicon-log-in'></span> Entrar</button>
+                </span>
+              </div>
+            </div>
+          </form>
+          <p id="errorNick"> </p>
+        </div>
+      </div>
+    </div>
+
+    <div id="chatRoom" class="container row">
+      <h1>Sala de Chat de:</h1>
+      <p id="resultado"> </p>
+      <div class="col-lg-4">
+        <div class="thumbnail">
+          <img src="img/cara1.jpg">
+          <h4 id="hisName">Otro Usuario</h4>
+        </div>
+        <div class="thumbnail">
+          <img src="img/cara2.jpg">
+          <h4 id="yourName">Usted</h4>
+        </div>
+      </div>
+      <div class="jumbotron col-lg-8 chatPanel">
+        <div id="messagePanel" class="panel panel-default ">
+          <div class="panel-body">
+            
+          </div>
+        </div>
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Escriba su Mensaje">
+            <span class="input-group-btn">
+              <button id="enviaMensaje" class="btn btn-default" type="button">Enviar</button>
+            </span>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      $(function(){
+        var socket = io.connect();
+
+        var $formaID = $('#insertaNick');
+
+        var $entraNick = $('#nombreUsuario');
+
+        $formaID.submit(function(e){
+          e.preventDefault();
+
+          socket.emit('entrar', $entraNick.val(), function(data){
+            if(data){
+              $('#nameInput').hide();
+              $('#chatRoom').show();
+            }          
+            else{
+              $('#grupoNick').addClass("has-error");
+              $('#errorNick').html('Intenta con otro nick');
+            }
+          });
+        });
+      });
+
+      //Recibiendo mis credenciales
+      socket.on('sesion', function(data){
+        var token = data.token;
+        var IDSesion = data.sessionID;
+      });
+
+    </script>
+    
+  </body>
+  
+</html>
