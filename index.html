@@ -12,7 +12,7 @@
   </head>
   
   <body>
-
+    <!-- Cabecera de la Página -->
     <div class="page-header">
       <h1>ChaRulet <small>Proyecto para Sistemas Distribuídos</small></h1>
     </div>
@@ -24,7 +24,7 @@
               <div class="input-group">
                 <input id='nombreUsuario' type="text" class="form-control" placeholder='Ingrese su nombre de usuario'>
                 <span class="input-group-btn">
-                  <button class="btn btn-default" type="button"><span class='glyphicon glyphicon-log-in'></span> Entrar</button>
+                  <button class="btn btn-default" type="button submit"><span class='glyphicon glyphicon-log-in'></span> Entrar</button>
                 </span>
               </div>
             </div>
@@ -48,7 +48,7 @@
         </div>
       </div>
       <div class="jumbotron col-lg-8">
-        <button type="button" class="btn btn-default" id='bSiguiente'>Siguiente usuario</button>
+        <button type="button" class="btn btn-default" id='bSiguiente'>Siguiente usuario <span class='glyphicon glyphicon-refresh'></span></button>
         <div id="messagePanel" class="panel panel-default ">
           <div class="panel-body" id='chatPanel'>
             
@@ -59,7 +59,7 @@
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Escriba su Mensaje" id="cuadroMensaje">
                 <span class="input-group-btn">
-                  <button id="enviarMensaje" class="btn btn-default" type="button submit">Enviar</button>
+                  <button id="enviarMensaje" class="btn btn-default" type="button submit"><span class='glyphicon glyphicon-share-alt'></span> Enviar</button>
                 </span>
             </div>
           </div>
@@ -89,6 +89,7 @@
 
         var $elMensaje = $('#cuadroMensaje');
 
+        var $suNombre = $('#hisName');
 
         var nickCompanero = null;
 
@@ -99,7 +100,8 @@
             if(data){
               $('#nameInput').hide();
               $('#chatRoom').show();
-              document.getElementById('cuadroMensaje').disabled = true;              
+              document.getElementById('cuadroMensaje').disabled = true;
+              document.getElementById('enviarMensaje').disabled = true;
             }          
             else{
               $('#grupoNick').addClass("has-error");
@@ -109,8 +111,8 @@
         });
         //Recibiendo mis credenciales
         socket.on('sesion', function(data){
-          var token = data.token;
-          var IDSesion = data.sessionID;
+          //var token = data.token;
+          //var IDSesion = data.sessionID;
           //console.log('El ID de esta sesión es ' + IDSesion);
         });
 
@@ -118,10 +120,14 @@
         document.getElementById('bSiguiente').onclick = function(){          
           socket.emit('siguiente', nickCompanero ,function(data){
               document.getElementById('cuadroMensaje').disabled = true;
+              document.getElementById('enviarMensaje').disabled = true;
               if (data) {
                 console.log('Esperando conexión');
                 document.getElementById('cuadroMensaje').disabled = false;
+                document.getElementById('enviarMensaje').disabled = false;
               }else{
+                $suNombre.html('En Espera...');
+                $chat.append('Ahora no hay gente libre<br/>');
                 console.log('No hay gente libre');
               };
           });
@@ -132,13 +138,18 @@
           //Debo guardar los datos de mi compañero          
           nickCompanero = data;
           document.getElementById('cuadroMensaje').disabled = false;
+          document.getElementById('enviarMensaje').disabled = false;
+          $chat.append('Ahora está hablando con '+nickCompanero+ '<br/>');
+          $suNombre.html(nickCompanero);
           console.log('Suscrito con '+ nickCompanero);
         });
 
         //Cuando me pidan desconexion
         socket.on('desuscribir', function(data){
           document.getElementById('cuadroMensaje').disabled = true;
+          document.getElementById('enviarMensaje').disabled = true;
           $chat.append('Su compañero buscó a otro con quien hablar <br/>');
+          $suNombre.html('En Espera...');
           nickCompanero = null;
         });
 
