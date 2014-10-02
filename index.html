@@ -99,7 +99,7 @@
             if(data){
               $('#nameInput').hide();
               $('#chatRoom').show();
-              $elMensaje.disabled = true;
+              document.getElementById('cuadroMensaje').disabled = true;              
             }          
             else{
               $('#grupoNick').addClass("has-error");
@@ -117,10 +117,10 @@
         //Función para buscar otro compañero
         document.getElementById('bSiguiente').onclick = function(){          
           socket.emit('siguiente', nickCompanero ,function(data){
-              //elMensaje.disabled = true;
+              document.getElementById('cuadroMensaje').disabled = true;
               if (data) {
                 console.log('Esperando conexión');
-                elMensaje.disabled = false;
+                document.getElementById('cuadroMensaje').disabled = false;
               }else{
                 console.log('No hay gente libre');
               };
@@ -131,8 +131,15 @@
         socket.on('suscribete', function(data){
           //Debo guardar los datos de mi compañero          
           nickCompanero = data;
-          //$elMensaje.disabled = false;
+          document.getElementById('cuadroMensaje').disabled = false;
           console.log('Suscrito con '+ nickCompanero);
+        });
+
+        //Cuando me pidan desconexion
+        socket.on('desuscribir', function(data){
+          document.getElementById('cuadroMensaje').disabled = true;
+          $chat.append('Su compañero buscó a otro con quien hablar <br/>');
+          nickCompanero = null;
         });
 
         //Cuando reciba un mensaje

@@ -63,12 +63,14 @@ io.sockets.on('connection',function(socket){
 
 		//Si antes tenia un compañero
 		if(data != null){
-
+			socket.companero.emit('desuscribir', {});
+			sesionesSolos.push(data);
+			sesionesSolos.push(socket.nickname);
 		}
 
 		for(var i = 0; i < sesionesSolos.length; i++){
 			//Si en la lista de solos hay alguien mas aparte de mi
-			if(sesionesSolos[i] != socket.nickname){
+			if(sesionesSolos[i] != socket.nickname && sesionesSolos[i]!=data){
 				var tmpPartner = sesionesSolos[i];
 				//Eliminar al compañero de la lista de solitarios
 				sesionesSolos.splice(i, 1);
@@ -79,7 +81,7 @@ io.sockets.on('connection',function(socket){
 			}
 		};
 		//Si encontré a alguien para hablar
-		if(socket.companero){
+		if(socket.companero && data != socket.companero.nickname){
 			callback(true);
 			//Me envío el nombre de mi compañero
 			socket.emit('suscribete', socket.companero.nickname);
