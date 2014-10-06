@@ -99,11 +99,6 @@
         var $suNombre = $('#hisName');
 
         var nickCompanero = null;
-         var apiKey = '45008252';
-              var sessionId = '1_MX40NTAwODI1Mn5-MTQxMjAxODk0ODY4OH5wbFV5NTBNK25RU3JQVUpvbGRrcm1oYkx-fg'; 
-              var $session = $('1_MX40NTAwODI1Mn5-MTQxMjAxODk0ODY4OH5wbFV5NTBNK25RU3JQVUpvbGRrcm1oYkx-fg');
-              var token = 'T1==cGFydG5lcl9pZD00NTAwODI1MiZzaWc9ODFjZWNiYjIyZmRiZmYwZTlhZGQ1MDFkZGZlYmNkNDdjNjc5MzVkZTpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTFfTVg0ME5UQXdPREkxTW41LU1UUXhNakF4T0RrME9EWTRPSDV3YkZWNU5UQk5LMjVSVTNKUVZVcHZiR1JyY20xb1lreC1mZyZjcmVhdGVfdGltZT0xNDEyNTM0OTI4Jm5vbmNlPTAuMzI5OTA2NTM1NjAwMzMyNw==';
-              var session = OT.initSession(apiKey, sessionId); 
 
         $formaID.submit(function(e){
           e.preventDefault();
@@ -113,23 +108,22 @@
               $('#nameInput').hide();
               $('#chatRoom').show();
 
-             
-              
-              session.connect(token, function(error) {
-                if (error) {
-                  console.log(error.message);
-                } else {
-                  session.publish('myPublisherDiv',  {insertMode: 'append', width: 264, height: 198}); 
-                }
-              });
-            /*session.on({
-                  streamCreated: function(event) { 
-                    session.subscribe(event.stream, 'subscribersDiv', {insertMode: 'append'}); 
-                  }
-                });*/
-         /* session.on("streamCreated", function(event) {
-  subscriber = session.subscribe(event.stream, 'subscribersDiv', {insertMode: 'append'});
-});*/
+        var apiKey = '45008252';
+        var sessionId = '1_MX40NTAwODI1Mn5-MTQxMjAxODk0ODY4OH5wbFV5NTBNK25RU3JQVUpvbGRrcm1oYkx-fg'; 
+        var token = 'T1==cGFydG5lcl9pZD00NTAwODI1MiZzaWc9ODFjZWNiYjIyZmRiZmYwZTlhZGQ1MDFkZGZlYmNkNDdjNjc5MzVkZTpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTFfTVg0ME5UQXdPREkxTW41LU1UUXhNakF4T0RrME9EWTRPSDV3YkZWNU5UQk5LMjVSVTNKUVZVcHZiR1JyY20xb1lreC1mZyZjcmVhdGVfdGltZT0xNDEyNTM0OTI4Jm5vbmNlPTAuMzI5OTA2NTM1NjAwMzMyNw==';
+        var session = OT.initSession(apiKey, sessionId); 
+session.on({
+  streamCreated: function(event) { 
+    session.subscribe(event.stream, 'subscribersDiv', {insertMode: 'append'}); 
+  }
+});
+        session.connect(token, function(error) {
+          if (error) {
+            console.log(error.message);
+          } else {
+            session.publish('myPublisherDiv',  {insertMode: 'append', width: 264, height: 198}); 
+          }
+        });
 
               document.getElementById('cuadroMensaje').disabled = true;
               document.getElementById('enviarMensaje').disabled = true;
@@ -146,11 +140,6 @@
           //var IDSesion = data.sessionID;
           //console.log('El ID de esta sesión es ' + IDSesion);
         });
-      session.on({
-  streamCreated: function(event) { 
-    session.subscribe(event.stream, 'subscribersDiv', {insertMode: 'append'}); 
-  }
-});
 
         //Función para buscar otro compañero
         document.getElementById('bSiguiente').onclick = function(){          
@@ -158,8 +147,6 @@
               document.getElementById('cuadroMensaje').disabled = true;
               document.getElementById('enviarMensaje').disabled = true;
               if (data) {
-                
-                
                 console.log('Esperando conexión');
                 document.getElementById('cuadroMensaje').disabled = false;
                 document.getElementById('enviarMensaje').disabled = false;
@@ -171,15 +158,12 @@
           });
         };
 
-
         //Cuando me pidan suscripción
         socket.on('suscribete', function(data){
           //Debo guardar los datos de mi compañero          
           nickCompanero = data;
           document.getElementById('cuadroMensaje').disabled = false;
           document.getElementById('enviarMensaje').disabled = false;
-          console.log('sesión' + sessionId);
-          
           $chat.append('Ahora está hablando con '+nickCompanero+ '<br/>');
           $suNombre.html(nickCompanero);
           console.log('Suscrito con '+ nickCompanero);

@@ -47,19 +47,22 @@ io.sockets.on('connection',function(socket){
 			listaSesiones.push(socket);
 			sesionesSolos.push(socket.nickname);
 
-			var datos;
-			//Le creamos una sesión al usuario
-			/*ot.createSession('localhost', {}, function(session){
-				datos = {
-				 	sessionId: session.sessionId,
-					token: ot.generateToken({
-						sessionId: session.sessionId,
-						role: opentok.Roles.MODERATOR
-					})
-				};
-			});*/
-			//Enviamos las credenciales de sesión
-			socket.emit('sesion', datos	);
+		/*	//var datos;
+			ot.createSession('localhost', {}, function(session) {
+
+		      // Each user should be a moderator
+		      var data = {
+		        sessionId: session,
+		        token: ot.generateToken({ 
+		          sessionId: session,
+		          role: opentok.RoleConstants.MODERATOR
+		        })
+		      };
+
+		      // Send initialization data back to the client
+		      socket.emit('initial', data);
+		    });*/
+
 		}
 	});
 
@@ -91,6 +94,7 @@ io.sockets.on('connection',function(socket){
 			callback(true);
 			compadre = 1;
 			//Me envío el nombre de mi compañero
+			//publisher = ot.initPublisher('publisher');
 			socket.emit('suscribete', socket.companero.nickname);
 			//Y le envío mi nombre a mi compañero
 			socket.companero.emit('suscribete', socket.nickname);
